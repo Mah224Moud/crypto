@@ -28,7 +28,7 @@ def saveFile(filename: str, content: list):
         f.write(content)
 
 
-def split_into_7(storage: list, file_content: str):
+def split_into(storage: list, file_content: str, howMany):
     """
     Split the given file content into chunks of length 7 and append them to the storage list.
 
@@ -39,8 +39,8 @@ def split_into_7(storage: list, file_content: str):
     Returns:
     - None
     """
-    for i in range(0, len(file_content), 7):
-        storage.append(file_content[i:i+7])
+    for i in range(0, len(file_content), howMany):
+        storage.append(file_content[i:i+howMany])
 
 
 def correct(number: int) -> int:
@@ -87,7 +87,7 @@ def left_and_right(list_to_split: str) -> dict:
     }
 
 
-def calcul(divided_into_7: list) -> str:
+def calcul(divided_into_7: list) -> dict:
     """
     A function that takes a list of 7-digit binary numbers and processes each number to correct any errors in specific digits. It prints intermediate results and corrections made. The corrected numbers are then concatenated and returned as a single string.
 
@@ -97,7 +97,9 @@ def calcul(divided_into_7: list) -> str:
     Returns:
     - result (str): A string containing the corrected binary numbers concatenated together.
     """
-    result = ""
+    complet = ""
+    cut = ""
+    cpt = 0
     for i in divided_into_7:
         print(f"Mot: {i}")
         c1 = int(i[0])
@@ -123,41 +125,54 @@ def calcul(divided_into_7: list) -> str:
 
         print(res5, res6, res7)
 
-        if not (res5["status"] and res6["status"]) and res7["status"]:
+        if res5["status"] == False and res6["status"] == False and res7["status"] == True:
             print("C1 est erroné !!!")
+            cpt += 1
             c1 = correct(c1)
-        if not (res5["status"] and res6["status"] and res7["status"]):
+        if res5["status"] == False and res6["status"] == False and res7["status"] == False:
             print("C2 est erroné !!!")
             c2 = correct(c2)
-        if not (res5["status"] and res7["status"]) and res6["status"]:
+            cpt += 1
+        if res5["status"] == False and res7["status"] == False and res6["status"] == True:
             print("C3 est erroné !!!")
             c3 = correct(3)
-        if not (res6["status"] and res7["status"]) and res5["status"]:
+            cpt += 1
+        if res6["status"] == False and res7["status"] == False and res5["status"] == True:
             print("C4 est erroné !!!")
             c4 = correct(4)
+            cpt += 1
 
-        result += "".join(list(map(str, ([c1, c2, c3, c4]))))
+        complet += "".join(list(map(str, ([c1, c2, c3, c4]+right))))
+        cut += "".join(list(map(str, ([c1, c2, c3, c4]))))
 
         print(f"Avant: {left+right}\nAprès: {[c1, c2, c3, c4]+right}")
+        print("\nNombre d'erreurs trouvées: ", cpt)
 
         res5.clear()
         res6.clear()
         res7.clear()
 
         print("")
-    return result
+    return {
+        "complet": complet,
+        "couper": cut
+    }
 
 
 def main():
     FILE_NAME = "test.txt"
     SPLIT_IN_7 = []
     FILE_CONTENT = readFile(FILE_NAME)
-    NEW_FILE_PATH = "resultat.txt"
+    CORRECTED_LETTER = "lettre_corrige.txt"
+    CORRECTED_LETTER_WITHOUT_BIT = "lettre_corrige_sans_bit.txt"
 
-    split_into_7(SPLIT_IN_7, FILE_CONTENT)
-    newContent = calcul(SPLIT_IN_7)
+    split_into(SPLIT_IN_7, FILE_CONTENT, 7)
 
-    saveFile(NEW_FILE_PATH, newContent)
+    complet = calcul(SPLIT_IN_7).get("complet")
+    cut = calcul(SPLIT_IN_7).get("couper")
+
+    saveFile(CORRECTED_LETTER, complet)
+    saveFile(CORRECTED_LETTER_WITHOUT_BIT, cut)
 
 
 if __name__ == "__main__":
