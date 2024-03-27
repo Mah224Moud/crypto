@@ -12,7 +12,7 @@ def readFile(filename: str) -> str:
     with open(filename, 'r') as f:
         content = f.read()
 
-    return content
+    return content.replace("\n", "").replace(" ", "")
 
 
 def saveFile(filename: str, content: list):
@@ -136,9 +136,9 @@ def calcul(divided_into_7: list) -> str:
             print("C4 est erroné !!!")
             c4 = correct(4)
 
-        result += "".join(list(map(str, [c1, c2, c3, c4])))
+        result += "".join(list(map(str, ([c1, c2, c3, c4]))))
 
-        print("final: ", left, [c1, c2, c3, c4])
+        print(f"Avant: {left+right}\nAprès: {[c1, c2, c3, c4]+right}")
 
         res5.clear()
         res6.clear()
