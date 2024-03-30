@@ -1,3 +1,6 @@
+import ascii_table as ASCII
+
+
 def readFile(filename: str) -> str:
     """
     Read the content of the file specified by the filename parameter and return it as a string.
@@ -69,6 +72,26 @@ def sum_binary(numbers: list) -> int:
     return int(bin(sum(numbers))[-1])
 
 
+def get_ascii(binary_number: str) -> str:
+    bin_to_int = int(binary_number, 2)
+    return chr(bin_to_int)
+
+
+def get_ascii_from_table(binary_number: str, ascii_table: dict) -> str:
+    """
+    Returns the ASCII character corresponding to the given binary number.
+
+    Parameters:
+        binary_number (str): The binary number to be converted to an ASCII character.
+        ascii_table (dict): A dictionary containing the ASCII table.
+
+    Returns:
+        str: The ASCII character corresponding to the given binary number.
+    """
+    bin_to_int = int(binary_number, 2)
+    return ascii_table.get(str(bin_to_int))
+
+
 def left_and_right(list_to_split: str) -> dict:
     """
     Splits a given string into two lists, "left" and "right", based on the indices 0 to 3 and 4 to the end of the string respectively.
@@ -101,7 +124,7 @@ def calcul(divided_into_7: list) -> dict:
     cut = ""
     cpt = 0
     for i in divided_into_7:
-        print(f"Mot: {i}")
+        # print(f"Mot: {i}")
         c1 = int(i[0])
         c2 = int(i[1])
         c3 = int(i[2])
@@ -113,7 +136,7 @@ def calcul(divided_into_7: list) -> dict:
         left = left_and_right(i).get("left")
         right = left_and_right(i).get("right")
 
-        print(f"gauche: {left}, droite: {right}")
+        # print(f"gauche: {left}, droite: {right}")
 
         res5 = {"c5": sum_binary([c1, c2, c3])}
         res6 = {"c6": sum_binary([c1, c2, c4])}
@@ -123,7 +146,7 @@ def calcul(divided_into_7: list) -> dict:
         res6["status"] = True if res6["c6"] == c6 else False
         res7["status"] = True if res7["c7"] == c7 else False
 
-        print(res5, res6, res7)
+        # print(res5, res6, res7)
 
         if res5["status"] == False and res6["status"] == False and res7["status"] == True:
             print("C1 est erroné !!!")
@@ -145,34 +168,72 @@ def calcul(divided_into_7: list) -> dict:
         complet += "".join(list(map(str, ([c1, c2, c3, c4]+right))))
         cut += "".join(list(map(str, ([c1, c2, c3, c4]))))
 
-        print(f"Avant: {left+right}\nAprès: {[c1, c2, c3, c4]+right}")
-        print("\nNombre d'erreurs trouvées: ", cpt)
+        # print(f"Avant: {left+right}\nAprès: {[c1, c2, c3, c4]+right}")
 
         res5.clear()
         res6.clear()
         res7.clear()
 
-        print("")
+        # print("")
+    print("\nNombre d'erreurs trouvées: ", cpt)
     return {
         "complet": complet,
         "couper": cut
     }
 
 
+def get_transcription(divided_into_8: list) -> dict:
+    """
+    Transcribes a list of 8-digit binary numbers into ASCII characters.
+
+    Parameters:
+    - divided_into_8 (list): A list of 8-digit binary numbers to be transcribed.
+
+    Returns:
+    - result (str): A string containing the ASCII characters transcribed from the binary numbers.
+    """
+    result1 = ""
+    result2 = ""
+    for i in divided_into_8:
+        result1 += get_ascii(i)
+        result2 += get_ascii_from_table(i, ASCII.ASCII)
+
+        """ print(
+            f"Mot: {i} ==> {get_ascii(i)} ==> {get_ascii_from_table(i, ASCII.ASCII)}") """
+    return {
+        "result1": result1,
+        "result2": result2
+    }
+
+
 def main():
-    FILE_NAME = "test.txt"
+    FILE_NAME = "lettre.txt"
     SPLIT_IN_7 = []
+    SPLIT_IN_8 = []
     FILE_CONTENT = readFile(FILE_NAME)
     CORRECTED_LETTER = "lettre_corrige.txt"
     CORRECTED_LETTER_WITHOUT_BIT = "lettre_corrige_sans_bit.txt"
+    ASCII_TABLE = ASCII.ASCII
 
     split_into(SPLIT_IN_7, FILE_CONTENT, 7)
 
-    complet = calcul(SPLIT_IN_7).get("complet")
-    cut = calcul(SPLIT_IN_7).get("couper")
+    binary = calcul(SPLIT_IN_7)
+    complet = binary.get("complet")
+    cut = binary.get("couper")
 
     saveFile(CORRECTED_LETTER, complet)
     saveFile(CORRECTED_LETTER_WITHOUT_BIT, cut)
+
+    fileContent = readFile(CORRECTED_LETTER_WITHOUT_BIT)
+    split_into(SPLIT_IN_8, fileContent, 8)
+    get_transcription(SPLIT_IN_8)
+
+    transcription = get_transcription(SPLIT_IN_8)
+    ascii_builtin = transcription.get("result1")
+    ascii_homemade = transcription.get("result2")
+
+    saveFile("ascii_builtin.txt", ascii_builtin)
+    saveFile("ascii_homemade.txt", ascii_homemade)
 
 
 if __name__ == "__main__":
