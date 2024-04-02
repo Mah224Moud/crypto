@@ -1,6 +1,3 @@
-import ascii_table as ASCII
-
-
 def readFile(filename: str) -> str:
     """
     Read the content of the file specified by the filename parameter and return it as a string.
@@ -75,21 +72,6 @@ def sum_binary(numbers: list) -> int:
 def get_ascii(binary_number: str) -> str:
     bin_to_int = int(binary_number, 2)
     return chr(bin_to_int)
-
-
-def get_ascii_from_table(binary_number: str, ascii_table: dict) -> str:
-    """
-    Returns the ASCII character corresponding to the given binary number.
-
-    Parameters:
-        binary_number (str): The binary number to be converted to an ASCII character.
-        ascii_table (dict): A dictionary containing the ASCII table.
-
-    Returns:
-        str: The ASCII character corresponding to the given binary number.
-    """
-    bin_to_int = int(binary_number, 2)
-    return ascii_table.get(str(bin_to_int))
 
 
 def left_and_right(list_to_split: str) -> dict:
@@ -175,14 +157,14 @@ def calcul(divided_into_7: list) -> dict:
         res7.clear()
 
         # print("")
-    print("\nNombre d'erreurs trouvées: ", cpt)
+    print(f"\nNombre d'erreurs trouvées: {cpt} \n")
     return {
         "complet": complet,
         "couper": cut
     }
 
 
-def get_transcription(divided_into_8: list) -> dict:
+def get_transcription(divided_into_8: list) -> str:
     """
     Transcribes a list of 8-digit binary numbers into ASCII characters.
 
@@ -192,28 +174,49 @@ def get_transcription(divided_into_8: list) -> dict:
     Returns:
     - result (str): A string containing the ASCII characters transcribed from the binary numbers.
     """
-    result1 = ""
+    result = ""
     result2 = ""
     for i in divided_into_8:
-        result1 += get_ascii(i)
-        result2 += get_ascii_from_table(i, ASCII.ASCII)
+        result += get_ascii(i)
 
         """ print(
             f"Mot: {i} ==> {get_ascii(i)} ==> {get_ascii_from_table(i, ASCII.ASCII)}") """
-    return {
-        "result1": result1,
-        "result2": result2
-    }
+    return result
+
+
+def decode_vigenere(cipher_text: str, key: str) -> str:
+    decalage = 65
+    decoded = ""
+    total = 26
+    k_position = 0
+    for i in cipher_text:
+        if (k_position >= len(key)):
+            k_position = 0
+        if i.isalpha():
+            c = ord(i.upper()) - decalage
+            k = ord(key[k_position].upper()) - decalage
+            k_position += 1
+
+            calcul = (c - k + total) % total
+            if i.isupper():
+                decoded += chr(calcul+decalage)
+            else:
+                decoded += chr(calcul+decalage).lower()
+        else:
+            decoded += i
+    return decoded
 
 
 def main():
     FILE_NAME = "lettre.txt"
+    KEY = "python"
     SPLIT_IN_7 = []
     SPLIT_IN_8 = []
     FILE_CONTENT = readFile(FILE_NAME)
     CORRECTED_LETTER = "lettre_corrige.txt"
     CORRECTED_LETTER_WITHOUT_BIT = "lettre_corrige_sans_bit.txt"
-    ASCII_TABLE = ASCII.ASCII
+    VIGENERE_TRANSCRIPTION = "vigenere_transcription.txt"
+    ASCII_TRANSCRIPTION = "ascii_transcription.txt"
 
     split_into(SPLIT_IN_7, FILE_CONTENT, 7)
 
@@ -228,12 +231,13 @@ def main():
     split_into(SPLIT_IN_8, fileContent, 8)
     get_transcription(SPLIT_IN_8)
 
-    transcription = get_transcription(SPLIT_IN_8)
-    ascii_builtin = transcription.get("result1")
-    ascii_homemade = transcription.get("result2")
+    ascii_transcription = get_transcription(SPLIT_IN_8)
 
-    saveFile("ascii_builtin.txt", ascii_builtin)
-    saveFile("ascii_homemade.txt", ascii_homemade)
+    saveFile("ascii_transcription.txt", ascii_transcription)
+
+    transcription_vigenere = decode_vigenere(ascii_transcription, KEY)
+
+    saveFile(VIGENERE_TRANSCRIPTION, transcription_vigenere)
 
 
 if __name__ == "__main__":

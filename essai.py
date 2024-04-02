@@ -1,8 +1,6 @@
-a = False
-b = True
-c = True
+content = ""
+with open("test.txt") as f:
+    content = f.read()
 
-if not (a and b) and c:
-    print("ok")
-else:
-    print("non")
+
+print(content)
