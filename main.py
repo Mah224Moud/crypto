@@ -211,10 +211,11 @@ def decode_vigenere(cipher_text: str, key: str) -> str:
 
 
 def generate_random_key(lenght: int) -> str:
-    key = ""
-    for i in range(0, lenght):
-        key += chr(rand.randint(97, 122))
-    return key
+    random_key = ""
+    letters = "".join(chr(i) for i in range(97, 123))
+    random_key = "".join(rand.SystemRandom().choice(letters)
+                         for _ in range(lenght))
+    return random_key
 
 
 def get_vernam(cipher_text: str, key: str) -> str:
