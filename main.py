@@ -1,3 +1,6 @@
+import random as rand
+
+
 def readFile(filename: str) -> str:
     """
     Read the content of the file specified by the filename parameter and return it as a string.
@@ -207,6 +210,48 @@ def decode_vigenere(cipher_text: str, key: str) -> str:
     return decoded
 
 
+def generate_random_key(lenght: int) -> str:
+    key = ""
+    for i in range(0, lenght):
+        key += chr(rand.randint(97, 122))
+    return key
+
+
+def get_vernam(cipher_text: str, key: str) -> str:
+    decalage = 65
+    result = ""
+    for t, k in zip(cipher_text, key):
+        tval = ord(t.upper()) - decalage
+        kval = ord(k.upper()) - decalage
+        calcul = (tval + kval) % 26
+        if t.isalpha():
+            if t.isupper():
+                result += chr(calcul + decalage).upper()
+            else:
+                result += chr(calcul + decalage).lower()
+        else:
+            result += t
+    return result
+
+
+def decode_vernam(cipher_text: str, key: str) -> str:
+    decalage = 65
+    result = ""
+    for t, k in zip(cipher_text, key):
+        tval = ord(t.upper()) - decalage
+        kval = ord(k.upper()) - decalage
+
+        calcul = (tval - kval) % 26
+        if t.isalpha():
+            if t.isupper():
+                result += chr(calcul + decalage).upper()
+            else:
+                result += chr(calcul + decalage).lower()
+        else:
+            result += t
+    return result
+
+
 def main():
     FILE_NAME = "lettre.txt"
     KEY = "python"
@@ -217,6 +262,7 @@ def main():
     CORRECTED_LETTER_WITHOUT_BIT = "lettre_corrige_sans_bit.txt"
     VIGENERE_TRANSCRIPTION = "vigenere_transcription.txt"
     ASCII_TRANSCRIPTION = "ascii_transcription.txt"
+    VERNAM_CODAGE = "chiffre_de_vernam.txt"
 
     split_into(SPLIT_IN_7, FILE_CONTENT, 7)
 
@@ -226,18 +272,33 @@ def main():
 
     saveFile(CORRECTED_LETTER, complet)
     saveFile(CORRECTED_LETTER_WITHOUT_BIT, cut)
+    print("Binaire corrigé !!! \n")
 
     fileContent = readFile(CORRECTED_LETTER_WITHOUT_BIT)
     split_into(SPLIT_IN_8, fileContent, 8)
     get_transcription(SPLIT_IN_8)
 
     ascii_transcription = get_transcription(SPLIT_IN_8)
-
     saveFile("ascii_transcription.txt", ascii_transcription)
 
-    transcription_vigenere = decode_vigenere(ascii_transcription, KEY)
+    print("Transcription en ascii!!!\n")
 
+    transcription_vigenere = decode_vigenere(ascii_transcription, KEY)
     saveFile(VIGENERE_TRANSCRIPTION, transcription_vigenere)
+
+    print("Décodage de Vigenere!!!\n")
+
+    key_length = len(transcription_vigenere)
+
+    random_key = generate_random_key(key_length)
+    saveFile("cle_aleatoire.txt", random_key)
+
+    print(f"Génération d'une clé aléatoire de {key_length} caratères!!!\n")
+
+    vernam = get_vernam(transcription_vigenere, random_key)
+    saveFile(VERNAM_CODAGE, vernam)
+
+    print("Codage de vernam appliquer !!!")
 
 
 if __name__ == "__main__":
