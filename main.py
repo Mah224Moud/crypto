@@ -18,7 +18,7 @@ def readFile(filename: str) -> str:
     return content.replace("\n", "").replace(" ", "")
 
 
-def saveFile(filename: str, content: list):
+def saveFile(filename: str, content: str):
     """
         Saves the given content to a file with the specified filename.
         Parameters:
@@ -56,20 +56,12 @@ def correct(number: int) -> int:
     Returns:
         int: 1 if the input number is equal to 0, otherwise 0.
     """
-    return 1 if number == 0 else 0
+    return 0 if number == 1 else 1
 
 
 def sum_binary(numbers: list) -> int:
-    """
-    Calculates the sum of a list of binary numbers and returns the last digit.
-
-    Parameters:
-        numbers (list): A list of binary numbers.
-
-    Returns:
-        int: The last digit of the sum of the binary numbers.
-    """
-    return int(bin(sum(numbers))[-1])
+    total = sum(numbers)
+    return total % 2
 
 
 def get_ascii(binary_number: str) -> str:
@@ -137,21 +129,23 @@ def calcul(divided_into_7: list) -> dict:
             print("C1 est erroné !!!")
             cpt += 1
             c1 = correct(c1)
+            print(f"Avant: {left+right}\nAprès: {[c1, c2, c3, c4]+right}\n")
         if res5["status"] == False and res6["status"] == False and res7["status"] == False:
             print("C2 est erroné !!!")
             c2 = correct(c2)
             cpt += 1
         if res5["status"] == False and res7["status"] == False and res6["status"] == True:
             print("C3 est erroné !!!")
-            c3 = correct(3)
+            c3 = correct(c3)
             cpt += 1
         if res6["status"] == False and res7["status"] == False and res5["status"] == True:
             print("C4 est erroné !!!")
-            c4 = correct(4)
+            c4 = correct(c4)
             cpt += 1
+            print(f"Avant: {left+right}\nAprès: {[c1, c2, c3, c4]+right}\n")
 
-        complet += "".join(list(map(str, ([c1, c2, c3, c4]+right))))
-        cut += "".join(list(map(str, ([c1, c2, c3, c4]))))
+        complet += "".join(list(map(str, ([c1, c2, c3, c4]+right)))) + "\n"
+        cut += "".join(list(map(str, ([c1, c2, c3, c4])))) + "\n"
 
         # print(f"Avant: {left+right}\nAprès: {[c1, c2, c3, c4]+right}")
 
@@ -178,7 +172,6 @@ def get_transcription(divided_into_8: list) -> str:
     - result (str): A string containing the ASCII characters transcribed from the binary numbers.
     """
     result = ""
-    result2 = ""
     for i in divided_into_8:
         result += get_ascii(i)
 
@@ -218,10 +211,10 @@ def generate_random_key(lenght: int) -> str:
     return random_key
 
 
-def get_vernam(cipher_text: str, key: str) -> str:
+def get_vernam(text: str, key: str) -> str:
     decalage = 65
     result = ""
-    for t, k in zip(cipher_text, key):
+    for t, k in zip(text, key):
         tval = ord(t.upper()) - decalage
         kval = ord(k.upper()) - decalage
         calcul = (tval + kval) % 26
@@ -277,10 +270,14 @@ def main():
 
     fileContent = readFile(CORRECTED_LETTER_WITHOUT_BIT)
     split_into(SPLIT_IN_8, fileContent, 8)
+    cut_8 = ""
+    for i in SPLIT_IN_8:
+        cut_8 += str(i) + "\n"
+    saveFile("8bits.txt", cut_8)
     get_transcription(SPLIT_IN_8)
 
     ascii_transcription = get_transcription(SPLIT_IN_8)
-    saveFile("ascii_transcription.txt", ascii_transcription)
+    saveFile(ASCII_TRANSCRIPTION, ascii_transcription)
 
     print("Transcription en ascii!!!\n")
 
