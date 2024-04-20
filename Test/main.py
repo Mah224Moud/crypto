@@ -190,6 +190,69 @@ def decode_vernam(text: str, key: str) -> str:
     return result
 
 
+class Node:
+    def __init__(self, frequency, character=None, left=None, right=None):
+        self.character = character
+        self.frequency = frequency
+        self.left = left
+        self.right = right
+
+    def __repr__(self):
+        return f"Node({self.character}, {self.frequency})"
+
+
+def determines_frequencies(data: str) -> dict:
+    frequency = {}
+    for i in data:
+        frequency[i] = data.count(i)
+    return frequency
+
+
+def sort_by_frequency_asc(nodes: dict) -> None:
+    return dict(sorted(nodes.items(), key=lambda i: i[1], reverse=False))
+
+
+def build_tree(frequencies: dict) -> Node:
+    nodes = []
+    for character, frequency in frequencies.items():
+        nodes.append(Node(frequency, character))
+    while len(nodes) > 1:
+        nodes.sort(key=lambda node: node.frequency)
+        left = nodes.pop(0)
+        right = nodes.pop(0)
+        parent = Node(frequency=left.frequency +
+                      right.frequency, left=left, right=right)
+        nodes.append(parent)
+    return nodes[0]
+
+
+def generate_code(node: Node, prefix: str = "") -> dict:
+    if node.character:
+        return {node.character: prefix}
+    else:
+        return {**generate_code(node.left, prefix + "0"), **generate_code(node.right, prefix + "1")}
+
+
+def encode(data: str, codes: dict):
+    result = ""
+    for i in data:
+        result += codes[i]
+    return result
+
+
+def calculate_bits(original_text: str, frequencies: dict, codes: dict) -> dict:
+    total = 0
+    original = len(original_text) * 8
+    for i in frequencies:
+        total += frequencies.get(i) * len(codes.get(i))
+    percentage = round(((original - total)/original) * 100, 2)
+    return {
+        "original": original,
+        "after": total,
+        "percentage": percentage
+    }
+
+
 def main():
     LETTER = "lettre.txt"
     CORRECTED = "lettre_corrigee.txt"
@@ -199,6 +262,7 @@ def main():
     VIGENERE = "decodage_vigenere.txt"
     VERNAM = "encodage_vernam.txt"
     RAND_KEY = "cle_aleatoire.txt"
+    HUFFMAN = "compression_huffman.txt"
 
     letter = readFile(LETTER)
     split_7 = split(letter, 7)
@@ -217,7 +281,7 @@ def main():
     transcription = get_transcription(split_8)
     saveFile(TRANSCRIPTION, transcription)
     print(
-        f"Transcription effectuée et enregistrée dans: '{TRANSCRIPTION}'\n")
+        f"Transcription binaire en ASCII 8bits effectuée et enregistrée dans: '{TRANSCRIPTION}'\n")
 
     vigenere = decode_vigenere(transcription, KEY)
     saveFile(VIGENERE, vigenere)
@@ -232,7 +296,28 @@ def main():
     vernam = get_vernam(vigenere, randomKey)
     saveFile(VERNAM, vernam)
     print(
-        f"Text encodé à nouveau via l'algorithme de Vernam et enregistré dans '{VERNAM}'\n")
+        f"Text encodé à nouveau via l'algorithme de Vernam et enregistré dans: '{VERNAM}'\n")
+
+    freq = determines_frequencies(vernam)
+    root = build_tree(freq)
+    codes = generate_code(root)
+    huffman = encode(vernam, codes)
+    result = calculate_bits(vernam, freq, codes)
+    saveFile(HUFFMAN, huffman)
+
+    print(f"Compression de Huffman ...\n")
+
+    print(f"Fréquences de chaques caractères:\n{freq}\n")
+
+    print(f"Racine: {root}\n")
+    print(f"Codes:\n{codes}\n")
+    print(
+        f"Après compression, nous obtenons donc {result.get('after')} bits au lieu de {result.get('original')} soit ({len(vernam)} caractères x 8 bits par caractère).")
+    print(
+        f"La compression a reduit la taille des données de {result.get('percentage')}%.\n")
+
+    print(
+        f"Resultat de la compression enregistré dans: '{HUFFMAN}'.")
 
 
 if __name__ == "__main__":

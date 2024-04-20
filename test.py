@@ -81,7 +81,7 @@ class Node:
         return f"Node({self.character}, {self.frequency})"
 
 
-def determinesFrequencies(data: str) -> dict:
+def determines_frequencies(data: str) -> dict:
     frequency = {}
     for i in data:
         frequency[i] = data.count(i)
@@ -92,7 +92,7 @@ def sort_by_frequency_asc(nodes: dict) -> None:
     return dict(sorted(nodes.items(), key=lambda i: i[1], reverse=False))
 
 
-def buildTree(frequencies: dict) -> Node:
+def build_tree(frequencies: dict) -> Node:
     nodes = []
     for character, frequency in frequencies.items():
         nodes.append(Node(frequency, character))
@@ -134,8 +134,8 @@ def calculate_bits(original_text: str, frequencies: dict, codes: dict) -> dict:
 
 
 text = "Wikipedia"
-freq = determinesFrequencies(text)
-racine = buildTree(freq)
+freq = determines_frequencies(text)
+racine = build_tree(freq)
 codes = generate_code(racine)
 res = encode("Wikipedia", codes)
 
