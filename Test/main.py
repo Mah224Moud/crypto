@@ -19,11 +19,31 @@ def readFile(filename: str) -> str:
 
 
 def saveFile(filename: str, content: str) -> str:
+    """
+    Saves the given content to a file with the specified filename.
+
+    Parameters:
+        filename (str): The name of the file to save the content to.
+        content (str): The content to be saved to the file.
+
+    Returns:
+        str: The content that was saved to the file.
+    """
     with open(filename, 'w') as f:
         f.write(content)
 
 
 def split(content: str, howMany: int) -> list:
+    """
+    Splits a given string into substrings of a specified length.
+
+    Parameters:
+        content (str): The string to be split.
+        howMany (int): The length of each substring.
+
+    Returns:
+        list: A list of substrings, each with length `howMany`.
+    """
     content = content.replace("\n", "")
     result = []
     for i in range(0, len(content), howMany):
@@ -32,6 +52,17 @@ def split(content: str, howMany: int) -> list:
 
 
 def get_left_and_right(binary: str):
+    """
+    Splits a given binary string into two parts, "left" and "right", by extracting the first 4 characters as the "left" and the rest as the "right".
+
+    Parameters:
+        binary (str): The binary string to be split into "left" and "right".
+
+    Returns:
+        dict: A dictionary containing the "left" and "right" parts of the binary string.
+            - "left" (str): The first 4 characters of the input binary string.
+            - "right" (str): The characters from the 4th position to the end of the input binary string.
+    """
     return {
         "left": binary[0:4],
         "right": binary[4:]
@@ -39,14 +70,41 @@ def get_left_and_right(binary: str):
 
 
 def sum_binaries(binaries: list) -> int:
+    """
+    Calculates the sum of a list of binary numbers and returns the result modulo 2.
+
+    Parameters:
+        binaries (list): A list of binary numbers.
+
+    Returns:
+        int: The sum of the binary numbers modulo 2.
+    """
     return sum(binaries) % 2
 
 
 def correct(binary: int) -> int:
+    """
+    A function that takes in a binary number and returns 0 if the number is equal to 1, otherwise it returns 1.
+
+    Parameters:
+        binary (int): The binary number to be checked.
+
+    Returns:
+        int: 0 if the binary number is equal to 1, otherwise 1.
+    """
     return 0 if binary == 1 else 1
 
 
 def get_hamming(binaries: list) -> dict:
+    """
+    Calculates the Hamming distance for a list of binary numbers.
+
+    Parameters:
+        binaries (list): A list of binary numbers.
+
+    Returns:
+        dict: A dictionary containing the corrected binary numbers with parity bits and the binary numbers without parity bits.
+    """
     corrected = ""
     no_parity = ""
     counter = 0
@@ -110,11 +168,29 @@ def get_hamming(binaries: list) -> dict:
 
 
 def get_ascii(binary_number: str) -> str:
+    """
+    Converts a binary number to its corresponding ASCII character.
+
+    Parameters:
+        binary_number (str): The binary number to be converted.
+
+    Returns:
+        str: The corresponding ASCII character.
+    """
     bin_to_int = int(binary_number, 2)
     return chr(bin_to_int)
 
 
 def get_transcription(binaries: list) -> str:
+    """
+    Transcribes a list of binary numbers into ASCII characters.
+
+    Parameters:
+    - binaries (list): A list of binary numbers to be transcribed.
+
+    Returns:
+    - result (str): A string containing the ASCII characters transcribed from the binary numbers.
+    """
     result = ""
     for i in binaries:
         result += get_ascii(i)
@@ -125,6 +201,16 @@ def get_transcription(binaries: list) -> str:
 
 
 def decode_vigenere(text: str, key: str) -> str:
+    """
+    Decodes a text using the Vigenère cipher algorithm.
+
+    Parameters:
+        text (str): The text to be decoded.
+        key (str): The decryption key.
+
+    Returns:
+        str: The decoded text.
+    """
     decalage = 65
     decoded = ""
     total = 26
@@ -148,6 +234,15 @@ def decode_vigenere(text: str, key: str) -> str:
 
 
 def generate_random_key(lenght: int) -> str:
+    """
+    Generates a random key of a specified length.
+
+    Parameters:
+        lenght (int): The length of the random key to be generated.
+
+    Returns:
+        str: The randomly generated key.
+    """
     random_key = ""
     letters = "".join(chr(i) for i in range(97, 123))
     random_key = "".join(rand.SystemRandom().choice(letters)
@@ -156,6 +251,16 @@ def generate_random_key(lenght: int) -> str:
 
 
 def get_vernam(text: str, key: str) -> str:
+    """
+    Calculates the Vernam cipher for the given text and key.
+
+    Parameters:
+        text (str): The text to be encrypted.
+        key (str): The key used for encryption.
+
+    Returns:
+        str: The encrypted text.
+    """
     decalage = 65
     result = ""
     for t, k in zip(text, key):
@@ -173,6 +278,16 @@ def get_vernam(text: str, key: str) -> str:
 
 
 def decode_vernam(text: str, key: str) -> str:
+    """
+    Decodes a text using the Vernam cipher algorithm for the given text and key.
+
+    Parameters:
+        text (str): The text to be encrypted.
+        key (str): The key used for encryption.
+
+    Returns:
+        str: The decoded text.
+    """
     decalage = 65
     result = ""
     for t, k in zip(text, key):
@@ -192,16 +307,40 @@ def decode_vernam(text: str, key: str) -> str:
 
 class Node:
     def __init__(self, frequency, character=None, left=None, right=None):
+        """
+        Initializes a new instance of the `Node` class.
+
+        Args:
+            frequency (int): The frequency of the node.
+            character (Optional[str]): The character associated with the node. Defaults to None.
+            left (Optional[Node]): The left child node. Defaults to None.
+            right (Optional[Node]): The right child node. Defaults to None.
+        """
         self.character = character
         self.frequency = frequency
         self.left = left
         self.right = right
 
     def __repr__(self):
+        """
+        Return a string representation of the Node object.
+
+        Returns:
+            str: A string representation of the Node object in the format "Node(character, frequency)".
+        """
         return f"Node({self.character}, {self.frequency})"
 
 
 def determines_frequencies(data: str) -> dict:
+    """
+    Determines the frequencies of each character in a given string.
+
+    Parameters:
+        data (str): The input string.
+
+    Returns:
+        dict: A dictionary where the keys are the characters in the string and the values are the frequencies of each character.
+    """
     frequency = {}
     for i in data:
         frequency[i] = data.count(i)
@@ -209,10 +348,40 @@ def determines_frequencies(data: str) -> dict:
 
 
 def sort_by_frequency_asc(nodes: dict) -> None:
+    """
+    Sorts the nodes dictionary by frequency in ascending order.
+
+    Parameters:
+        nodes (dict): A dictionary containing nodes and their frequencies.
+
+    Returns:
+        None
+    """
     return dict(sorted(nodes.items(), key=lambda i: i[1], reverse=False))
 
 
 def build_tree(frequencies: dict) -> Node:
+    """
+    Builds a binary tree from a dictionary of character frequencies.
+
+    Args:
+        frequencies (dict): A dictionary where the keys are characters and the values are their corresponding frequencies.
+
+    Returns:
+        Node: The root node of the binary tree.
+
+    Description:
+        This function builds a binary tree from a dictionary of character frequencies. It creates a list of nodes, where each node represents a character and its frequency. The nodes are then sorted by frequency in ascending order and paired up to form parent nodes. This process continues until there is only one node left, which is the root node of the binary tree.
+
+        The function uses the following steps:
+        1. Iterate over the characters and frequencies in the input dictionary.
+        2. Create a node for each character and add it to the list of nodes.
+        3. While there are more than one node in the list, sort the nodes by frequency in ascending order.
+        4. Pop the two nodes with the lowest frequencies from the list.
+        5. Create a parent node with the sum of the frequencies of the two child nodes and the child nodes as left and right children.
+        6. Add the parent node to the list of nodes.
+        7. Repeat steps 3-6 until there is only one node left, which is the root node.
+        """
     nodes = []
     for character, frequency in frequencies.items():
         nodes.append(Node(frequency, character))
@@ -227,6 +396,18 @@ def build_tree(frequencies: dict) -> Node:
 
 
 def generate_code(node: Node, prefix: str = "") -> dict:
+    """
+    A recursive function that generates a dictionary of binary codes for characters based on a given binary tree node. 
+    It traverses the binary tree starting from the given node and recursively generates the binary codes for each character. 
+    If the node represents a character, it returns a dictionary with the character as the key and the binary code as the value. 
+    If the node does not represent a character, it recursively calls itself on the left and right child nodes, adding "0" to the prefix when moving left and "1" when moving right, and combines the generated dictionaries. 
+    Returns a dictionary where the keys are characters and the values are their corresponding binary codes.
+    Args:
+        node (Node): The current node in the binary tree.
+        prefix (str): The binary code prefix for the current node. Defaults to an empty string.
+    Returns:
+        dict: A dictionary where the keys are characters and the values are their corresponding binary codes.
+    """
     if node.character:
         return {node.character: prefix}
     else:
@@ -234,6 +415,16 @@ def generate_code(node: Node, prefix: str = "") -> dict:
 
 
 def encode(data: str, codes: dict):
+    """
+    Encodes the input data using the provided codes.
+
+    Parameters:
+        data (str): The data to be encoded.
+        codes (dict): A dictionary of binary codes for characters.
+
+    Returns:
+        str: The encoded result.
+    """
     result = ""
     for i in data:
         result += codes[i]
@@ -241,6 +432,17 @@ def encode(data: str, codes: dict):
 
 
 def calculate_bits(original_text: str, frequencies: dict, codes: dict) -> dict:
+    """
+    Calculates the total number of bits required to encode the original text using the provided frequencies and codes.
+
+    Parameters:
+        original_text (str): The original text to be encoded.
+        frequencies (dict): A dictionary containing the frequencies of each character in the text.
+        codes (dict): A dictionary of binary codes for characters.
+
+    Returns:
+        dict: A dictionary containing the original number of bits, the total number of bits after encoding, and the percentage reduction in bits.
+    """
     total = 0
     original = len(original_text) * 8
     for i in frequencies:
