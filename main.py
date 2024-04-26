@@ -15,92 +15,100 @@ def readFile(filename: str) -> str:
     with open(filename, 'r') as f:
         content = f.read()
 
-    return content.replace("\n", "").replace(" ", "")
+    return content
 
 
-def saveFile(filename: str, content: str):
+def saveFile(filename: str, content: str) -> str:
     """
-        Saves the given content to a file with the specified filename.
-        Parameters:
-        - filename (str): The name of the file to save the content to.
-        - content (list): The content to be saved to the file.
-        Returns:
-        None
+    Saves the given content to a file with the specified filename.
+
+    Parameters:
+        filename (str): The name of the file to save the content to.
+        content (str): The content to be saved to the file.
+
+    Returns:
+        str: The content that was saved to the file.
     """
-    with open(filename, "w") as f:
+    with open(filename, 'w') as f:
         f.write(content)
 
 
-def split_into(storage: list, file_content: str, howMany):
+def split(content: str, howMany: int) -> list:
     """
-    Split the given file content into chunks of length 7 and append them to the storage list.
+    Splits a given string into substrings of a specified length.
 
     Parameters:
-    - storage (list): A list to store the split chunks.
-    - file_content (str): The content of the file to be split.
+        content (str): The string to be split.
+        howMany (int): The length of each substring.
 
     Returns:
-    - None
+        list: A list of substrings, each with length `howMany`.
     """
-    for i in range(0, len(file_content), howMany):
-        storage.append(file_content[i:i+howMany])
+    content = content.replace("\n", "")
+    result = []
+    for i in range(0, len(content), howMany):
+        result.append(content[i:i+howMany])
+    return result
 
 
-def correct(number: int) -> int:
+def get_left_and_right(binary: str):
     """
-    Returns 1 if the input number is equal to 0, otherwise returns 0.
+    Splits a given binary string into two parts, "left" and "right", by extracting the first 4 characters as the "left" and the rest as the "right".
 
     Parameters:
-        number (int): The input number to be checked.
+        binary (str): The binary string to be split into "left" and "right".
 
     Returns:
-        int: 1 if the input number is equal to 0, otherwise 0.
-    """
-    return 0 if number == 1 else 1
-
-
-def sum_binary(numbers: list) -> int:
-    total = sum(numbers)
-    return total % 2
-
-
-def get_ascii(binary_number: str) -> str:
-    bin_to_int = int(binary_number, 2)
-    return chr(bin_to_int)
-
-
-def left_and_right(list_to_split: str) -> dict:
-    """
-    Splits a given string into two lists, "left" and "right", based on the indices 0 to 3 and 4 to the end of the string respectively.
-
-    Parameters:
-        list_to_split (str): The string to be split into two lists.
-
-    Returns:
-        dict: A dictionary containing the "left" and "right" lists.
-            - "left" (list): A list of integers obtained by converting the first four characters of the input string to integers.
-            - "right" (list): A list of integers obtained by converting the remaining characters of the input string to integers.
+        dict: A dictionary containing the "left" and "right" parts of the binary string.
+            - "left" (str): The first 4 characters of the input binary string.
+            - "right" (str): The characters from the 4th position to the end of the input binary string.
     """
     return {
-        "left": list(map(int, list_to_split[0:4])),
-        "right": list(map(int, list_to_split[4:]))
+        "left": binary[0:4],
+        "right": binary[4:]
     }
 
 
-def calcul(divided_into_7: list) -> dict:
+def sum_binaries(binaries: list) -> int:
     """
-    A function that takes a list of 7-digit binary numbers and processes each number to correct any errors in specific digits. It prints intermediate results and corrections made. The corrected numbers are then concatenated and returned as a single string.
+    Calculates the sum of a list of binary numbers and returns the result modulo 2.
 
     Parameters:
-    - divided_into_7 (list): A list of 7-digit binary numbers to be processed.
+        binaries (list): A list of binary numbers.
 
     Returns:
-    - result (str): A string containing the corrected binary numbers concatenated together.
+        int: The sum of the binary numbers modulo 2.
     """
-    complet = ""
-    cut = ""
-    cpt = 0
-    for i in divided_into_7:
+    return sum(binaries) % 2
+
+
+def correct(binary: int) -> int:
+    """
+    A function that takes in a binary number and returns 0 if the number is equal to 1, otherwise it returns 1.
+
+    Parameters:
+        binary (int): The binary number to be checked.
+
+    Returns:
+        int: 0 if the binary number is equal to 1, otherwise 1.
+    """
+    return 0 if binary == 1 else 1
+
+
+def get_hamming(binaries: list) -> dict:
+    """
+    Calculates the Hamming distance for a list of binary numbers.
+
+    Parameters:
+        binaries (list): A list of binary numbers.
+
+    Returns:
+        dict: A dictionary containing the corrected binary numbers with parity bits and the binary numbers without parity bits.
+    """
+    corrected = ""
+    no_parity = ""
+    counter = 0
+    for i in binaries:
         # print(f"Mot: {i}")
         c1 = int(i[0])
         c2 = int(i[1])
@@ -110,69 +118,81 @@ def calcul(divided_into_7: list) -> dict:
         c6 = int(i[5])
         c7 = int(i[6])
 
-        left = left_and_right(i).get("left")
-        right = left_and_right(i).get("right")
+        direction = get_left_and_right(i)
+        left = direction.get("left")
+        right = direction.get("right")
 
         # print(f"gauche: {left}, droite: {right}")
 
-        res5 = {"c5": sum_binary([c1, c2, c3])}
-        res6 = {"c6": sum_binary([c1, c2, c4])}
-        res7 = {"c7": sum_binary([c2, c3, c4])}
+        resC5 = {"res": sum_binaries([c1, c2, c3])}
+        resC6 = {"res": sum_binaries([c1, c2, c4])}
+        resC7 = {"res": sum_binaries([c2, c3, c4])}
 
-        res5["status"] = True if res5["c5"] == c5 else False
-        res6["status"] = True if res6["c6"] == c6 else False
-        res7["status"] = True if res7["c7"] == c7 else False
+        resC5["status"] = True if resC5["res"] == c5 else False
+        resC6["status"] = True if resC6["res"] == c6 else False
+        resC7["status"] = True if resC7["res"] == c7 else False
 
-        # print(res5, res6, res7)
-
-        if res5["status"] == False and res6["status"] == False and res7["status"] == True:
-            print("C1 est erroné !!!")
-            cpt += 1
+        if resC5["status"] == False and resC6["status"] == False and resC7["status"] == True:
+            print("C1 est erroné")
             c1 = correct(c1)
-            print(f"Avant: {left+right}\nAprès: {[c1, c2, c3, c4]+right}\n")
-        if res5["status"] == False and res6["status"] == False and res7["status"] == False:
-            print("C2 est erroné !!!")
+            print("C1 est corrigé\n")
+            counter += 1
+        if resC5["status"] == False and resC6["status"] == False and resC7["status"] == False:
+            print("C2 est erroné")
             c2 = correct(c2)
-            cpt += 1
-        if res5["status"] == False and res7["status"] == False and res6["status"] == True:
-            print("C3 est erroné !!!")
+            print("C2 est corrigé\n")
+            counter += 1
+        if resC5["status"] == False and resC7["status"] == False and resC6["status"] == True:
+            print("C3 est erroné")
             c3 = correct(c3)
-            cpt += 1
-        if res6["status"] == False and res7["status"] == False and res5["status"] == True:
-            print("C4 est erroné !!!")
+            print("C3 est corrigé\n")
+            counter += 1
+        if resC6["status"] == False and resC7["status"] == False and resC5["status"] == True:
+            print("C4 est erroné")
             c4 = correct(c4)
-            cpt += 1
-            print(f"Avant: {left+right}\nAprès: {[c1, c2, c3, c4]+right}\n")
+            print("C4 est corrigé\n")
+            counter += 1
+        # print(f"Avant: {list(i)}")
+        """ print(
+            f"Apres: {[str(c1), str(c2), str(c3), str(c4), str(c5), str(c6), str(c7)]}\n") """
 
-        complet += "".join(list(map(str, ([c1, c2, c3, c4]+right)))) + "\n"
-        cut += "".join(list(map(str, ([c1, c2, c3, c4])))) + "\n"
+        corrected += str(c1) + str(c2) + str(c3)+str(c4) + right+"\n"
+        no_parity += str(c1) + str(c2) + str(c3)+str(c4) + "\n"
 
-        # print(f"Avant: {left+right}\nAprès: {[c1, c2, c3, c4]+right}")
+    print(f"Nombre d'erreurs trouvées: {counter}\n")
 
-        res5.clear()
-        res6.clear()
-        res7.clear()
-
-        # print("")
-    print(f"\nNombre d'erreurs trouvées: {cpt} \n")
     return {
-        "complet": complet,
-        "couper": cut
+        "corrected": corrected,
+        "no control bits": no_parity
     }
 
 
-def get_transcription(divided_into_8: list) -> str:
+def get_ascii(binary_number: str) -> str:
     """
-    Transcribes a list of 8-digit binary numbers into ASCII characters.
+    Converts a binary number to its corresponding ASCII character.
 
     Parameters:
-    - divided_into_8 (list): A list of 8-digit binary numbers to be transcribed.
+        binary_number (str): The binary number to be converted.
+
+    Returns:
+        str: The corresponding ASCII character.
+    """
+    bin_to_int = int(binary_number, 2)
+    return chr(bin_to_int)
+
+
+def get_transcription(binaries: list) -> str:
+    """
+    Transcribes a list of binary numbers into ASCII characters.
+
+    Parameters:
+    - binaries (list): A list of binary numbers to be transcribed.
 
     Returns:
     - result (str): A string containing the ASCII characters transcribed from the binary numbers.
     """
     result = ""
-    for i in divided_into_8:
+    for i in binaries:
         result += get_ascii(i)
 
         """ print(
@@ -180,12 +200,23 @@ def get_transcription(divided_into_8: list) -> str:
     return result
 
 
-def decode_vigenere(cipher_text: str, key: str) -> str:
+def decode_vigenere(text: str, key: str) -> str:
+    """
+    Decodes a text using the Vigenère cipher algorithm.
+
+    Parameters:
+        text (str): The text to be decoded.
+        key (str): The decryption key.
+
+    Returns:
+        str: The decoded text.
+    """
+    text = text.replace("é", "").replace("î", "")
     decalage = 65
     decoded = ""
     total = 26
     k_position = 0
-    for i in cipher_text:
+    for i in text:
         if (k_position >= len(key)):
             k_position = 0
         if i.isalpha():
@@ -204,6 +235,15 @@ def decode_vigenere(cipher_text: str, key: str) -> str:
 
 
 def generate_random_key(lenght: int) -> str:
+    """
+    Generates a random key of a specified length.
+
+    Parameters:
+        lenght (int): The length of the random key to be generated.
+
+    Returns:
+        str: The randomly generated key.
+    """
     random_key = ""
     letters = "".join(chr(i) for i in range(97, 123))
     random_key = "".join(rand.SystemRandom().choice(letters)
@@ -212,6 +252,16 @@ def generate_random_key(lenght: int) -> str:
 
 
 def get_vernam(text: str, key: str) -> str:
+    """
+    Calculates the Vernam cipher for the given text and key.
+
+    Parameters:
+        text (str): The text to be encrypted.
+        key (str): The key used for encryption.
+
+    Returns:
+        str: The encrypted text.
+    """
     decalage = 65
     result = ""
     for t, k in zip(text, key):
@@ -228,10 +278,20 @@ def get_vernam(text: str, key: str) -> str:
     return result
 
 
-def decode_vernam(cipher_text: str, key: str) -> str:
+def decode_vernam(text: str, key: str) -> str:
+    """
+    Decodes a text using the Vernam cipher algorithm for the given text and key.
+
+    Parameters:
+        text (str): The text to be encrypted.
+        key (str): The key used for encryption.
+
+    Returns:
+        str: The decoded text.
+    """
     decalage = 65
     result = ""
-    for t, k in zip(cipher_text, key):
+    for t, k in zip(text, key):
         tval = ord(t.upper()) - decalage
         kval = ord(k.upper()) - decalage
 
@@ -246,57 +306,221 @@ def decode_vernam(cipher_text: str, key: str) -> str:
     return result
 
 
+class Node:
+    def __init__(self, frequency, character=None, left=None, right=None):
+        """
+        Initializes a new instance of the `Node` class.
+
+        Args:
+            frequency (int): The frequency of the node.
+            character (Optional[str]): The character associated with the node. Defaults to None.
+            left (Optional[Node]): The left child node. Defaults to None.
+            right (Optional[Node]): The right child node. Defaults to None.
+        """
+        self.character = character
+        self.frequency = frequency
+        self.left = left
+        self.right = right
+
+    def __repr__(self):
+        """
+        Return a string representation of the Node object.
+
+        Returns:
+            str: A string representation of the Node object in the format "Node(character, frequency)".
+        """
+        return f"Node({self.character}, {self.frequency})"
+
+
+def determines_frequencies(data: str) -> dict:
+    """
+    Determines the frequencies of each character in a given string.
+
+    Parameters:
+        data (str): The input string.
+
+    Returns:
+        dict: A dictionary where the keys are the characters in the string and the values are the frequencies of each character.
+    """
+    frequency = {}
+    for i in data:
+        frequency[i] = data.count(i)
+    return frequency
+
+
+def sort_by_frequency_asc(nodes: dict) -> None:
+    """
+    Sorts the nodes dictionary by frequency in ascending order.
+
+    Parameters:
+        nodes (dict): A dictionary containing nodes and their frequencies.
+
+    Returns:
+        None
+    """
+    return dict(sorted(nodes.items(), key=lambda i: i[1], reverse=False))
+
+
+def build_tree(frequencies: dict) -> Node:
+    """
+    Builds a binary tree from a dictionary of character frequencies.
+
+    Args:
+        frequencies (dict): A dictionary where the keys are characters and the values are their corresponding frequencies.
+
+    Returns:
+        Node: The root node of the binary tree.
+
+    Description:
+        This function builds a binary tree from a dictionary of character frequencies. It creates a list of nodes, where each node represents a character and its frequency. The nodes are then sorted by frequency in ascending order and paired up to form parent nodes. This process continues until there is only one node left, which is the root node of the binary tree.
+
+        The function uses the following steps:
+        1. Iterate over the characters and frequencies in the input dictionary.
+        2. Create a node for each character and add it to the list of nodes.
+        3. While there are more than one node in the list, sort the nodes by frequency in ascending order.
+        4. Pop the two nodes with the lowest frequencies from the list.
+        5. Create a parent node with the sum of the frequencies of the two child nodes and the child nodes as left and right children.
+        6. Add the parent node to the list of nodes.
+        7. Repeat steps 3-6 until there is only one node left, which is the root node.
+        """
+    nodes = []
+    for character, frequency in frequencies.items():
+        nodes.append(Node(frequency, character))
+    while len(nodes) > 1:
+        nodes.sort(key=lambda node: node.frequency)
+        left = nodes.pop(0)
+        right = nodes.pop(0)
+        parent = Node(frequency=left.frequency +
+                      right.frequency, left=left, right=right)
+        nodes.append(parent)
+    return nodes[0]
+
+
+def generate_code(node: Node, prefix: str = "") -> dict:
+    """
+    A recursive function that generates a dictionary of binary codes for characters based on a given binary tree node. 
+    It traverses the binary tree starting from the given node and recursively generates the binary codes for each character. 
+    If the node represents a character, it returns a dictionary with the character as the key and the binary code as the value. 
+    If the node does not represent a character, it recursively calls itself on the left and right child nodes, adding "0" to the prefix when moving left and "1" when moving right, and combines the generated dictionaries. 
+    Returns a dictionary where the keys are characters and the values are their corresponding binary codes.
+    Args:
+        node (Node): The current node in the binary tree.
+        prefix (str): The binary code prefix for the current node. Defaults to an empty string.
+    Returns:
+        dict: A dictionary where the keys are characters and the values are their corresponding binary codes.
+    """
+    if node.character:
+        return {node.character: prefix}
+    else:
+        return {**generate_code(node.left, prefix + "0"), **generate_code(node.right, prefix + "1")}
+
+
+def encode(data: str, codes: dict):
+    """
+    Encodes the input data using the provided codes.
+
+    Parameters:
+        data (str): The data to be encoded.
+        codes (dict): A dictionary of binary codes for characters.
+
+    Returns:
+        str: The encoded result.
+    """
+    result = ""
+    for i in data:
+        result += codes[i]
+    return result
+
+
+def calculate_bits(original_text: str, frequencies: dict, codes: dict) -> dict:
+    """
+    Calculates the total number of bits required to encode the original text using the provided frequencies and codes.
+
+    Parameters:
+        original_text (str): The original text to be encoded.
+        frequencies (dict): A dictionary containing the frequencies of each character in the text.
+        codes (dict): A dictionary of binary codes for characters.
+
+    Returns:
+        dict: A dictionary containing the original number of bits, the total number of bits after encoding, and the percentage reduction in bits.
+    """
+    total = 0
+    original = len(original_text) * 8
+    for i in frequencies:
+        total += frequencies.get(i) * len(codes.get(i))
+    percentage = round(((original - total)/original) * 100, 2)
+    return {
+        "original": original,
+        "after": total,
+        "percentage": percentage
+    }
+
+
 def main():
-    FILE_NAME = "lettre.txt"
-    KEY = "python"
-    SPLIT_IN_7 = []
-    SPLIT_IN_8 = []
-    FILE_CONTENT = readFile(FILE_NAME)
-    CORRECTED_LETTER = "lettre_corrige.txt"
-    CORRECTED_LETTER_WITHOUT_BIT = "lettre_corrige_sans_bit.txt"
-    VIGENERE_TRANSCRIPTION = "vigenere_transcription.txt"
-    ASCII_TRANSCRIPTION = "ascii_transcription.txt"
-    VERNAM_CODAGE = "chiffre_de_vernam.txt"
+    LETTER = "lettre.txt"
+    CORRECTED = "lettre_corrigee.txt"
+    NO_CONTROL = "lettre_sans_bit_controle.txt"
+    TRANSCRIPTION = "transcription_alphanumerique.txt"
+    KEY = "PYTHON"
+    VIGENERE = "decodage_vigenere.txt"
+    VERNAM = "encodage_vernam.txt"
+    RAND_KEY = "cle_aleatoire.txt"
+    HUFFMAN = "compression_huffman.txt"
 
-    split_into(SPLIT_IN_7, FILE_CONTENT, 7)
+    letter = readFile(LETTER)
+    split_7 = split(letter, 7)
 
-    binary = calcul(SPLIT_IN_7)
-    complet = binary.get("complet")
-    cut = binary.get("couper")
+    hamming = get_hamming(split_7)
+    corrected = hamming.get("corrected")
+    saveFile(CORRECTED, corrected)
+    print(f"Lettre corrigée et enregistrée dans: '{CORRECTED}'\n")
 
-    saveFile(CORRECTED_LETTER, complet)
-    saveFile(CORRECTED_LETTER_WITHOUT_BIT, cut)
-    print("Binaire corrigé !!! \n")
+    no_control = hamming.get("no control bits")
+    saveFile(NO_CONTROL, no_control)
+    print(
+        f"Lettre corrigée sans les bits de controle et enregistrée dans: '{NO_CONTROL}'\n")
 
-    fileContent = readFile(CORRECTED_LETTER_WITHOUT_BIT)
-    split_into(SPLIT_IN_8, fileContent, 8)
-    cut_8 = ""
-    for i in SPLIT_IN_8:
-        cut_8 += str(i) + "\n"
-    saveFile("8bits.txt", cut_8)
-    get_transcription(SPLIT_IN_8)
+    split_8 = split(no_control, 8)
+    transcription = get_transcription(split_8)
+    saveFile(TRANSCRIPTION, transcription)
+    print(
+        f"Transcription binaire en ASCII 8bits effectuée et enregistrée dans: '{TRANSCRIPTION}'\n")
 
-    ascii_transcription = get_transcription(SPLIT_IN_8)
-    saveFile(ASCII_TRANSCRIPTION, ascii_transcription)
+    vigenere = decode_vigenere(transcription, KEY)
+    saveFile(VIGENERE, vigenere)
+    print(
+        f"Decodage de Vigenere éffectué sur la transcription à l'aide de la clé '{KEY}' enregistré dans '{VIGENERE}'\n")
 
-    print("Transcription en ascii!!!\n")
+    randomKey = generate_random_key(len(vigenere))
+    saveFile(RAND_KEY, randomKey)
+    print(
+        f"Clé aléatoire de longueur {len(randomKey)} générée et enregistré dans '{RAND_KEY}' '\n")
 
-    transcription_vigenere = decode_vigenere(ascii_transcription, KEY)
-    saveFile(VIGENERE_TRANSCRIPTION, transcription_vigenere)
+    vernam = get_vernam(vigenere, randomKey)
+    saveFile(VERNAM, vernam)
+    print(
+        f"Text encodé à nouveau via l'algorithme de Vernam et enregistré dans: '{VERNAM}'\n")
 
-    print("Décodage de Vigenere!!!\n")
+    freq = determines_frequencies(vernam)
+    root = build_tree(freq)
+    codes = generate_code(root)
+    huffman = encode(vernam, codes)
+    result = calculate_bits(vernam, freq, codes)
+    saveFile(HUFFMAN, huffman)
 
-    key_length = len(transcription_vigenere)
+    print(f"Compression de Huffman ...\n")
 
-    random_key = generate_random_key(key_length)
-    saveFile("cle_aleatoire.txt", random_key)
+    print(f"Fréquences de chaques caractères:\n{freq}\n")
 
-    print(f"Génération d'une clé aléatoire de {key_length} caratères!!!\n")
+    print(f"Racine: {root}\n")
+    print(f"Codes:\n{codes}\n")
+    print(
+        f"Après compression, nous obtenons donc {result.get('after')} bits au lieu de {result.get('original')} soit ({len(vernam)} caractères x 8 bits par caractère).")
+    print(
+        f"La compression a reduit la taille des données de {result.get('percentage')}%.\n")
 
-    vernam = get_vernam(transcription_vigenere, random_key)
-    saveFile(VERNAM_CODAGE, vernam)
-
-    print("Codage de vernam appliquer !!!")
+    print(
+        f"Resultat de la compression enregistré dans: '{HUFFMAN}'.")
 
 
 if __name__ == "__main__":
