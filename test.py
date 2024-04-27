@@ -81,15 +81,15 @@ class Node:
         return f"Node({self.character}, {self.frequency})"
 
 
+def sort_by_frequency_asc(nodes: dict) -> None:
+    return dict(sorted(nodes.items(), key=lambda i: i[1], reverse=False))
+
+
 def determines_frequencies(data: str) -> dict:
     frequency = {}
     for i in data:
         frequency[i] = data.count(i)
     return frequency
-
-
-def sort_by_frequency_asc(nodes: dict) -> None:
-    return dict(sorted(nodes.items(), key=lambda i: i[1], reverse=False))
 
 
 def build_tree(frequencies: dict) -> Node:
@@ -98,6 +98,7 @@ def build_tree(frequencies: dict) -> Node:
         nodes.append(Node(frequency, character))
     while len(nodes) > 1:
         nodes.sort(key=lambda node: node.frequency)
+        print(nodes)
         left = nodes.pop(0)
         right = nodes.pop(0)
         parent = Node(frequency=left.frequency +
@@ -139,7 +140,7 @@ racine = build_tree(freq)
 codes = generate_code(racine)
 res = encode("Wikipedia", codes)
 
-print(freq)
+print(sort_by_frequency_asc(freq))
 print(racine)
 print(codes)
 print(res)

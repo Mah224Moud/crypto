@@ -33,6 +33,19 @@ def saveFile(filename: str, content: str) -> str:
         f.write(content)
 
 
+def is_aphabet(text: str) -> bool:
+    """
+    Check if the given text is a valid alphabet character.
+
+    Parameters:
+        text (str): The text to be checked.
+
+    Returns:
+        bool: True if the text is a valid alphabet character, False otherwise.
+    """
+    return "A" <= text.upper() <= "Z"
+
+
 def split(content: str, howMany: int) -> list:
     """
     Splits a given string into substrings of a specified length.
@@ -211,7 +224,6 @@ def decode_vigenere(text: str, key: str) -> str:
     Returns:
         str: The decoded text.
     """
-    text = text.replace("é", "").replace("î", "")
     decalage = 65
     decoded = ""
     total = 26
@@ -219,7 +231,7 @@ def decode_vigenere(text: str, key: str) -> str:
     for i in text:
         if (k_position >= len(key)):
             k_position = 0
-        if i.isalpha():
+        if is_aphabet(i):
             c = ord(i.upper()) - decalage
             k = ord(key[k_position].upper()) - decalage
             k_position += 1
@@ -268,7 +280,7 @@ def get_vernam(text: str, key: str) -> str:
         tval = ord(t.upper()) - decalage
         kval = ord(k.upper()) - decalage
         calcul = (tval + kval) % 26
-        if t.isalpha():
+        if is_aphabet(t):
             if t.isupper():
                 result += chr(calcul + decalage).upper()
             else:
@@ -296,7 +308,7 @@ def decode_vernam(text: str, key: str) -> str:
         kval = ord(k.upper()) - decalage
 
         calcul = (tval - kval) % 26
-        if t.isalpha():
+        if is_aphabet(t):
             if t.isupper():
                 result += chr(calcul + decalage).upper()
             else:
@@ -388,6 +400,7 @@ def build_tree(frequencies: dict) -> Node:
         nodes.append(Node(frequency, character))
     while len(nodes) > 1:
         nodes.sort(key=lambda node: node.frequency)
+        print(nodes)
         left = nodes.pop(0)
         right = nodes.pop(0)
         parent = Node(frequency=left.frequency +
@@ -415,16 +428,16 @@ def generate_code(node: Node, prefix: str = "") -> dict:
         return {**generate_code(node.left, prefix + "0"), **generate_code(node.right, prefix + "1")}
 
 
-def encode(data: str, codes: dict):
+def compression_huffman(data: str, codes: dict):
     """
-    Encodes the input data using the provided codes.
+    Compresses the given data using Huffman coding.
 
-    Parameters:
-        data (str): The data to be encoded.
-        codes (dict): A dictionary of binary codes for characters.
+    Args:
+        data (str): The input string to be compressed.
+        codes (dict): A dictionary mapping each character in the input string to its corresponding Huffman code.
 
     Returns:
-        str: The encoded result.
+        str: The compressed string obtained by concatenating the Huffman codes of each character in the input string.
     """
     result = ""
     for i in data:
@@ -501,16 +514,19 @@ def main():
     print(
         f"Text encodé à nouveau via l'algorithme de Vernam et enregistré dans: '{VERNAM}'\n")
 
+    vernam = "wikipedia"
     freq = determines_frequencies(vernam)
     root = build_tree(freq)
     codes = generate_code(root)
-    huffman = encode(vernam, codes)
+    huffman = compression_huffman(vernam, codes)
     result = calculate_bits(vernam, freq, codes)
+    print(huffman)
     saveFile(HUFFMAN, huffman)
 
     print(f"Compression de Huffman ...\n")
 
-    print(f"Fréquences de chaques caractères:\n{freq}\n")
+    print(
+        f"Fréquences de chaques caractères:\n{sort_by_frequency_asc(freq)}\n")
 
     print(f"Racine: {root}\n")
     print(f"Codes:\n{codes}\n")
