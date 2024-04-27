@@ -441,7 +441,7 @@ def compression_huffman(data: str, codes: dict):
     """
     result = ""
     for i in data:
-        result += codes[i]
+        result += codes[i] + " "
     return result
 
 
@@ -520,7 +520,7 @@ def main():
     codes = generate_code(root)
     huffman = compression_huffman(vernam, codes)
     result = calculate_bits(vernam, freq, codes)
-    print(huffman)
+
     saveFile(HUFFMAN, huffman)
 
     print(f"Compression de Huffman ...\n")
