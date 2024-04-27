@@ -545,7 +545,7 @@ def main():
     print(
         f"Fréquences de chaque caractère:\n{sort_by_frequency_asc(freq)}\n")
 
-    print(f"Racine: {root}\n")
+    print(f"Racine de l'arbre de Huffman: {root}\n")
     print(f"Codes:\n{codes}\n")
     print(
         f"Après compression, nous obtenons donc {result.get('after')} bits au lieu de {result.get('original')} soit ({len(vernam)} caractères x 8 bits par caractère).")

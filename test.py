@@ -1,104 +1,86 @@
-""" from collections import defaultdict, Counter
-import heapq
-w = [("w", 1), ("i", 3), ("k", 1), ("p", 1), ("e", 1), ("d", 1), ("a", 1)] """
-
-
-# trier = dict(sorted(w.items(), key=lambda i: i[1], reverse=False))
-""" trier = sorted(w, key=lambda x: x[1], reverse=False)
-print(trier)
-
-petit = trier[0][1]
-same = False
-
-final = []
-
-for i, element in enumerate(trier, 0):
-    if (element[1] == petit):
-        same = True
-        print(element, element[1])
- """
-
-""" def huffman_encoding(data):
-    if not data:
-        return "", None
-
-    # Calcul des fréquences des caractères
-    frequency = Counter(data)
-    # Création d'une file de priorité avec ces fréquences
-    heap = [[weight, [symbol, ""]] for symbol, weight in frequency.items()]
-    heapq.heapify(heap)
-
-    while len(heap) > 1:
-        # Fusion des deux noeuds les moins fréquents
-        lo = heapq.heappop(heap)
-        hi = heapq.heappop(heap)
-        for pair in lo[1:]:
-            pair[1] = '1' + pair[1]
-        for pair in hi[1:]:
-            pair[1] = '0' + pair[1]
-        # Ajouter le nouveau noeud à la file
-        heapq.heappush(heap, [lo[0] + hi[0]] + lo[1:] + hi[1:])
-
-    # Génération des codes Huffman à partir de l'arbre
-    codes = dict(heapq.heappop(heap)[1:])
-    # Encodage du texte
-    encoded_text = ''.join(codes[char] for char in data)
-
-    return encoded_text, codes
-
-
-def huffman_decoding(encoded_text, codes):
-    reverse_codes = {v: k for k, v in codes.items()}
-    current_code = ""
-    decoded_text = ""
-
-    for bit in encoded_text:
-        current_code += bit
-        if current_code in reverse_codes:
-            decoded_text += reverse_codes[current_code]
-            current_code = ""
-
-    return decoded_text
-
-
-# Test de l'algorithme
-data = "wikipedia"
-encoded_data, codes = huffman_encoding(data)
-print("Encoded data:", encoded_data, codes)
-decoded_data = huffman_decoding(encoded_data, codes)
-print("Decoded data:", decoded_data)
- """
-
 
 class Node:
     def __init__(self, frequency, character=None, left=None, right=None):
+        """
+        Initializes a new instance of the `Node` class.
+
+        Args:
+            frequency (int): The frequency of the node.
+            character (Optional[str]): The character associated with the node. Defaults to None.
+            left (Optional[Node]): The left child node. Defaults to None.
+            right (Optional[Node]): The right child node. Defaults to None.
+        """
         self.character = character
         self.frequency = frequency
         self.left = left
         self.right = right
 
     def __repr__(self):
+        """
+        Return a string representation of the Node object.
+
+        Returns:
+            str: A string representation of the Node object in the format "Node(character, frequency)".
+        """
         return f"Node({self.character}, {self.frequency})"
 
 
-def sort_by_frequency_asc(nodes: dict) -> None:
-    return dict(sorted(nodes.items(), key=lambda i: i[1], reverse=False))
-
-
 def determines_frequencies(data: str) -> dict:
+    """
+    Determines the frequencies of each character in a given string.
+
+    Parameters:
+        data (str): The input string.
+
+    Returns:
+        dict: A dictionary where the keys are the characters in the string and the values are the frequencies of each character.
+    """
     frequency = {}
     for i in data:
         frequency[i] = data.count(i)
     return frequency
 
 
+def sort_by_frequency_asc(nodes: dict) -> None:
+    """
+    Sorts the nodes dictionary by frequency in ascending order.
+
+    Parameters:
+        nodes (dict): A dictionary containing nodes and their frequencies.
+
+    Returns:
+        None
+    """
+    return dict(sorted(nodes.items(), key=lambda i: i[1], reverse=False))
+
+
 def build_tree(frequencies: dict) -> Node:
+    """
+    Builds a binary tree from a dictionary of character frequencies.
+
+    Args:
+        frequencies (dict): A dictionary where the keys are characters and the values are their corresponding frequencies.
+
+    Returns:
+        Node: The root node of the binary tree.
+
+    Description:
+        This function builds a binary tree from a dictionary of character frequencies. It creates a list of nodes, where each node represents a character and its frequency. The nodes are then sorted by frequency in ascending order and paired up to form parent nodes. This process continues until there is only one node left, which is the root node of the binary tree.
+
+        The function uses the following steps:
+        1. Iterate over the characters and frequencies in the input dictionary.
+        2. Create a node for each character and add it to the list of nodes.
+        3. While there are more than one node in the list, sort the nodes by frequency in ascending order.
+        4. Pop the two nodes with the lowest frequencies from the list.
+        5. Create a parent node with the sum of the frequencies of the two child nodes and the child nodes as left and right children.
+        6. Add the parent node to the list of nodes.
+        7. Repeat steps 3-6 until there is only one node left, which is the root node.
+        """
     nodes = []
     for character, frequency in frequencies.items():
         nodes.append(Node(frequency, character))
     while len(nodes) > 1:
         nodes.sort(key=lambda node: node.frequency)
-        print(nodes)
         left = nodes.pop(0)
         right = nodes.pop(0)
         parent = Node(frequency=left.frequency +
@@ -108,20 +90,53 @@ def build_tree(frequencies: dict) -> Node:
 
 
 def generate_code(node: Node, prefix: str = "") -> dict:
+    """
+    A recursive function that generates a dictionary of binary codes for characters based on a given binary tree node. 
+    It traverses the binary tree starting from the given node and recursively generates the binary codes for each character. 
+    If the node represents a character, it returns a dictionary with the character as the key and the binary code as the value. 
+    If the node does not represent a character, it recursively calls itself on the left and right child nodes, adding "0" to the prefix when moving left and "1" when moving right, and combines the generated dictionaries. 
+    Returns a dictionary where the keys are characters and the values are their corresponding binary codes.
+    Args:
+        node (Node): The current node in the binary tree.
+        prefix (str): The binary code prefix for the current node. Defaults to an empty string.
+    Returns:
+        dict: A dictionary where the keys are characters and the values are their corresponding binary codes.
+    """
     if node.character:
         return {node.character: prefix}
     else:
         return {**generate_code(node.left, prefix + "0"), **generate_code(node.right, prefix + "1")}
 
 
-def encode(data: str, codes: dict):
+def huffman_compression(data: str, codes: dict):
+    """
+    Compresses the given data using Huffman coding.
+
+    Args:
+        data (str): The input string to be compressed.
+        codes (dict): A dictionary mapping each character in the input string to its corresponding Huffman code.
+
+    Returns:
+        str: The compressed string obtained by concatenating the Huffman codes of each character in the input string.
+    """
     result = ""
     for i in data:
-        result += codes[i]
+        result += codes[i] + " "
     return result
 
 
 def calculate_bits(original_text: str, frequencies: dict, codes: dict) -> dict:
+    """
+    Calculates the total number of bits required to encode the original text using the provided frequencies and codes.
+
+    Parameters:
+        original_text (str): The original text to be encoded.
+        frequencies (dict): A dictionary containing the frequencies of each character in the text.
+        codes (dict): A dictionary of binary codes for characters.
+
+    Returns:
+        dict: A dictionary containing the original number of bits, the total number of bits after encoding, and the percentage reduction in bits.
+    """
     total = 0
     original = len(original_text) * 8
     for i in frequencies:
@@ -130,18 +145,46 @@ def calculate_bits(original_text: str, frequencies: dict, codes: dict) -> dict:
     return {
         "original": original,
         "after": total,
-        "pourcentage": percentage
+        "percentage": percentage
     }
 
 
-text = "Wikipedia"
-freq = determines_frequencies(text)
-racine = build_tree(freq)
-codes = generate_code(racine)
-res = encode("Wikipedia", codes)
+def reverse_dict(original_codes: dict) -> dict:
+    if len(set(original_codes.values())) != len(original_codes):
+        raise ValueError(
+            "Les valeurs doivent être uniques pour inverser le dictionnaire sans perte de données.")
+    return {value: key for key, value in original_codes.items()}
 
-print(sort_by_frequency_asc(freq))
-print(racine)
-print(codes)
-print(res)
-print(calculate_bits(text, freq, codes))
+
+def huffman_decompression(compression_binaries: str, codes: dict):
+    compression = compression_binaries.split(" ")
+    codes = reverse_dict(codes)
+    result = ""
+    for i in compression:
+        if i in codes:
+            result += codes[i]
+    return result
+
+
+def main():
+    text = "wikipedia"
+    print(f"Texte original: {text}\n")
+    freq = determines_frequencies(text)
+    print(f"Fréquence de chaque caractère :\n {sort_by_frequency_asc(freq)}\n")
+    root = build_tree(freq)
+    print(f"Arbre de Huffman : {root}\n")
+    code = generate_code(root)
+    print(f"Code de chaque caractère :\n {code}\n")
+    compressed = huffman_compression(text, code)
+    print(f"Texte compressé : {compressed}\n")
+
+    result = calculate_bits(text, freq, code)
+    print(
+        f"Après compression, nous obtenons donc {result.get('after')} bits au lieu de {result.get('original')} soit ({len(text)} caractères x 8 bits par caractère).\n")
+    decompression = huffman_decompression(compressed, code)
+
+    print("Texte Decompresse :", decompression)
+
+
+if __name__ == "__main__":
+    main()
