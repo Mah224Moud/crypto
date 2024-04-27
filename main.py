@@ -400,7 +400,6 @@ def build_tree(frequencies: dict) -> Node:
         nodes.append(Node(frequency, character))
     while len(nodes) > 1:
         nodes.sort(key=lambda node: node.frequency)
-        print(nodes)
         left = nodes.pop(0)
         right = nodes.pop(0)
         parent = Node(frequency=left.frequency +
@@ -428,7 +427,7 @@ def generate_code(node: Node, prefix: str = "") -> dict:
         return {**generate_code(node.left, prefix + "0"), **generate_code(node.right, prefix + "1")}
 
 
-def compression_huffman(data: str, codes: dict):
+def huffman_compression(data: str, codes: dict):
     """
     Compresses the given data using Huffman coding.
 
@@ -469,6 +468,23 @@ def calculate_bits(original_text: str, frequencies: dict, codes: dict) -> dict:
     }
 
 
+def reverse_dict(original_codes: dict) -> dict:
+    if len(set(original_codes.values())) != len(original_codes):
+        raise ValueError(
+            "Les valeurs doivent être uniques pour inverser le dictionnaire sans perte de données.")
+    return {value: key for key, value in original_codes.items()}
+
+
+def huffman_decompression(compression_binaries: str, codes: dict):
+    compression = compression_binaries.split(" ")
+    codes = reverse_dict(codes)
+    result = ""
+    for i in compression:
+        if i in codes:
+            result += codes[i]
+    return result
+
+
 def main():
     LETTER = "lettre.txt"
     CORRECTED = "lettre_corrigee.txt"
@@ -479,6 +495,7 @@ def main():
     VERNAM = "encodage_vernam.txt"
     RAND_KEY = "cle_aleatoire.txt"
     HUFFMAN = "compression_huffman.txt"
+    HUFFMAN_DECOMPRESSION = "decompression_huffman.txt"
 
     letter = readFile(LETTER)
     split_7 = split(letter, 7)
@@ -486,7 +503,7 @@ def main():
     hamming = get_hamming(split_7)
     corrected = hamming.get("corrected")
     saveFile(CORRECTED, corrected)
-    print(f"Lettre corrigée et enregistrée dans: '{CORRECTED}'\n")
+    print(f"Lettre corrigée est enregistrée dans: '{CORRECTED}'\n")
 
     no_control = hamming.get("no control bits")
     saveFile(NO_CONTROL, no_control)
@@ -506,6 +523,7 @@ def main():
 
     randomKey = generate_random_key(len(vigenere))
     saveFile(RAND_KEY, randomKey)
+    print("Génération de la clé aléatoire ...")
     print(
         f"Clé aléatoire de longueur {len(randomKey)} générée et enregistré dans '{RAND_KEY}' '\n")
 
@@ -514,19 +532,18 @@ def main():
     print(
         f"Text encodé à nouveau via l'algorithme de Vernam et enregistré dans: '{VERNAM}'\n")
 
-    vernam = "wikipedia"
     freq = determines_frequencies(vernam)
     root = build_tree(freq)
     codes = generate_code(root)
-    huffman = compression_huffman(vernam, codes)
+    huffman = huffman_compression(vernam, codes)
     result = calculate_bits(vernam, freq, codes)
 
     saveFile(HUFFMAN, huffman)
 
-    print(f"Compression de Huffman ...\n")
+    print(f"Compression de Huffman ...")
 
     print(
-        f"Fréquences de chaques caractères:\n{sort_by_frequency_asc(freq)}\n")
+        f"Fréquences de chaque caractère:\n{sort_by_frequency_asc(freq)}\n")
 
     print(f"Racine: {root}\n")
     print(f"Codes:\n{codes}\n")
@@ -536,7 +553,13 @@ def main():
         f"La compression a reduit la taille des données de {result.get('percentage')}%.\n")
 
     print(
-        f"Resultat de la compression enregistré dans: '{HUFFMAN}'.")
+        f"Resultat de la compression enregistré dans: '{HUFFMAN}'.\n")
+
+    decompress = huffman_decompression(huffman, codes)
+    saveFile(HUFFMAN_DECOMPRESSION, decompress)
+    print("Décompression de Huffman ...")
+    print(
+        f"Resultat de la décompression enregistré dans: '{HUFFMAN_DECOMPRESSION}'\n")
 
 
 if __name__ == "__main__":
