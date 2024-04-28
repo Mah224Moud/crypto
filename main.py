@@ -559,7 +559,7 @@ def main():
     saveFile(HUFFMAN_DECOMPRESSION, decompress)
     print("Décompression de Huffman ...")
     print(
-        f"Resultat de la décompression enregistré dans: '{HUFFMAN_DECOMPRESSION}'\n")
+        f"Resultat de la décompression enregistré dans: '{HUFFMAN_DECOMPRESSION}'.\n")
 
 
 if __name__ == "__main__":
