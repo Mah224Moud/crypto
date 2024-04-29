@@ -561,6 +561,9 @@ def main():
     print(
         f"Resultat de la décompression enregistré dans: '{HUFFMAN_DECOMPRESSION}'.\n")
 
+    print("Decryptage du texte decompressé....\n")
+    print(f"{decode_vernam(decompress, randomKey)}")
+
 
 if __name__ == "__main__":
     main()
