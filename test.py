@@ -167,7 +167,7 @@ def huffman_decompression(compression_binaries: str, codes: dict):
 
 
 def main():
-    text = "Dw 02 lysp 1952, b Aicbjz Sgzx,"
+    text = "wikipedia"
     print(f"Texte original: {text}\n")
     freq = determines_frequencies(text)
     print(f"Fréquence de chaque caractère :\n {sort_by_frequency_asc(freq)}\n")

@@ -469,6 +469,15 @@ def calculate_bits(original_text: str, frequencies: dict, codes: dict) -> dict:
 
 
 def reverse_dict(original_codes: dict) -> dict:
+    """
+    A function that reverses the keys and values of a dictionary.
+
+    Parameters:
+        original_codes (dict): The original dictionary to be reversed.
+
+    Returns:
+        dict: A new dictionary with keys and values swapped.
+    """
     if len(set(original_codes.values())) != len(original_codes):
         raise ValueError(
             "Les valeurs doivent être uniques pour inverser le dictionnaire sans perte de données.")
@@ -476,6 +485,16 @@ def reverse_dict(original_codes: dict) -> dict:
 
 
 def huffman_decompression(compression_binaries: str, codes: dict):
+    """
+    Decompresses a string of compressed binary data using the Huffman algorithm.
+
+    Args:
+        compression_binaries (str): The compressed binary data to be decompressed.
+        codes (dict): A dictionary containing the Huffman codes for each symbol.
+
+    Returns:
+        str: The decompressed string.
+"""
     compression = compression_binaries.split(" ")
     codes = reverse_dict(codes)
     result = ""
